@@ -1,0 +1,251 @@
+%\documentclass[11pt,dvipdfm,t]{beamer} % こちらはslide用
+
+\documentclass[11pt,dvipdfm,t,handout]{beamer} % こちらはhandout用 
+                         % またdviの段階では 穴埋め済みの推敲用として使える
+
+\newcommand{\PDFTITLE}{{LaTeX Beamer Classによる穴埋め式handout/slide}}
+\newcommand{\PDFSUBJECT}{}
+\newcommand{\PDFAUTHOR}{{樋口さぶろお Saburo Higuchi}}
+\date{2012}
+\newcommand{\PDFKEYWORDS}{{LaTeX, LaTeX Beamer Class, もんたメソッド}}
+
+
+
+
+\title{\PDFTITLE}
+
+\author[\PDFAUTHOR]{\href{http://www.a.math.ryukoku.ac.jp/~hig/}{\PDFAUTHOR}}
+\institute[数理情報学科]{
+  \href{http://www.math.ryukoku.ac.jp}{龍谷大学理工学部数理情報学科}}
+
+\hypersetup{
+    bookmarksnumbered=true,%
+    bookmarkstype=toc,%
+    pdfpagemode=UseOutlines,%FullScreen,%UseThumbs,% UseOutlines, %None
+    pdfstartview={FitH -32768},% bounding box を fit, use default
+    pdftitle=\PDFTITLE,%タイトル
+    pdfsubject=\PDFSUBJECT,%サブタイトル
+    pdfauthor=\PDFAUTHOR,%文書の所有者
+    pdfkeywords=\PDFKEYWORDS,%キーワード
+    linkcolor=cyan%
+}
+
+%  \ifnum 42146=\euc"A4A2 \AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}\else
+%  \AtBeginDvi{\special{pdf:tounicode 90ms-RKSJ-UCS2}}\fi
+\AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}
+
+\usetheme{Boadilla}
+\usecolortheme{seahorse}
+
+\setbeamercovered{transparent=10} % uncover に影響, visible には関係ない
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macro Definitions Here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{ifthen}
+
+\newlength{\fboxsepbak}
+\setlength{\fboxsepbak}{\the\fboxsep}
+
+\newcommand{\fusenbgcolor}{white} % 表示前の背景. ここが付箋の黄色とかだともんたっぽくなるが, handout でもその色が背景になるので, 書き込みにくい場合がある
+\newcommand{\daishibgcolor}{yellow} % 表示後の背景. 後から追ってノートする人のためにはスクリーン上で見つけやすい色にしたほうがいいかも.
+\newcommand{\framelinecolor}{black} % 枠の線の色
+
+\newcommand<>{\hiddenbox}[1]{
+  \ifthenelse{\equal{#2}{}}{%
+    {\setlength{\fboxsep}{0pt}\fcolorbox{\framelinecolor}{\fusenbgcolor}{\visible<+- | alert@+ | handout:0>{\setlength{\fboxsep}{\fboxsepbak}\colorbox{\daishibgcolor}{\LARGE #1}}}}%
+  }{%
+{\setlength{\fboxsep}{0pt}\fcolorbox{\framelinecolor}{\fusenbgcolor}{\visible#2{\setlength{\fboxsep}{\fboxsepbak}\colorbox{\daishibgcolor}{\LARGE #1}}}}}}
+
+\newcommand<>{\hiddenboxm}[1]{%
+  \ifthenelse{\equal{#2}{}}{%
+    {\setlength{\fboxsep}{0pt}\fcolorbox{\framelinecolor}{\fusenbgcolor}{\visible<+- | alert@+ | handout:0>{\setlength{\fboxsep}{\fboxsepbak}\colorbox{\daishibgcolor}{\LARGE $#1$}}}}%
+  }{%
+{\setlength{\fboxsep}{0pt}\fcolorbox{\framelinecolor}{\fusenbgcolor}{\visible#2{\setlength{\fboxsep}{\fboxsepbak}\colorbox{\daishibgcolor}{\LARGE $#1$}}}}%
+  }%
+}
+
+\newcommand<>{\hiddenpar}[1]{
+\noindent
+\hiddenbox#2{
+\noindent
+  \begin{minipage}{0.92\linewidth}
+    #1
+  \end{minipage}
+}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\titlepage
+
+\begin{minipage}{0.72\linewidth}
+\fbox{目標}
+\begin{enumerate}
+  \item LaTeX Beamer Class で PowerPoint より簡単に, 領域の非表示/表示の変化をつけよう(アニメーションはありません)
+  \item LaTeX Beamer Class で もんたメソッドを使おう.
+  \item LaTeX Beamer Class で空欄に書き込めるhandoutを作ろう
+\end{enumerate}
+  \end{minipage}
+\parbox[c]{3.0cm}{\includegraphics[scale=0.3]{hig_short2_cqr.eps}
+\vspace*{-2ex}
+
+{\footnotesize\url{http://hig3.net}}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{定義したCommands}
+  \begin{itemize}
+    \item {$\backslash$}hiddenbox\{隠す部分\} \\
+    このように指定された「隠す部分」が, 前から1個ずつ表示される
+    
+    \item {$\backslash$}hiddenbox$<$指定$>$\{隠す部分\} \\
+    「隠す部分」が表示される部分を, 前から順, でなく, 指定(overlay specification)の通りとする. この指定方法は LaTeX Beamer Class が定めている.
+  \end{itemize}
+
+\structure{Some syntactic sugar}
+
+  \begin{itemize}
+\item {$\backslash$}hiddenboxm\{隠す部分\}, {$\backslash$}hiddenboxm$<$指定$>$\{隠す部分\} \\
+数式の中で使える.  hiddenbox\{\$ \$\} のこと.
+\item {$\backslash$}hiddenpar\{隠す部分\}, {$\backslash$}hiddenpar$<$指定$>$\{隠す部分\}\\
+隠す部分, がスライド幅のminipageにはいっているものとして, 
+minipage全体を表示/非表示する(いってみれば, 高さが保たれる). 
+黒板で説明することをメモしてほしいとき(スライドを作る時間が足りないとき?)は, {$\backslash$}hiddenpar\{{$\backslash$}\quad{$\backslash$}vspace*\{5cm\}\} などとしておくと, メモ必要性が伝わりやすい.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\uncover<+>{} 
+  \frametitle{以下使用例}
+
+もともと LaTeX Beamer には, overlay という機能がある. beameruserguide.pdf の Creating Overlays というsectionを参照.
+\smallskip
+
+今の目的には, 
+\begin{itemize}
+  \item 非表示時にも同じ面積を占有し(すなわちonlyではなく), 
+  \item 表示の濃淡変化でなく完全に無地になる(すなわちcover/uncoverでなく), 
+\end{itemize}
+visible/invisibleが適している. ここで定義した hiddenbox は visible をちょっと修飾したもの.
+
+次は, デフォルトでitemizeに適用されたcover/uncover の例
+\begin{enumerate}
+\item<+> A
+\item<+> B
+\item<+> C
+\end{enumerate}
+\end{frame}
+
+
+
+
+\begin{frame}
+\uncover<+>{} % 最初は空白
+\frametitle{hiddenboxの使用}
+
+オイラーの公式を発見したのは\hiddenbox{Euler}
+
+テイラー展開を発見したのは\hiddenbox{Taylor}
+
+$$
+  e^{i\theta}=\hiddenbox{$\cos\theta$}+\sqrt{-1}\hiddenbox{$\sin\theta$}
+$$
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}\uncover<+>{}
+\frametitle{hiddenboxmはalign/eqnarrayでも使える(?)}
+  \begin{align*}
+    \hiddenboxm{\log} e^x=&x\\
+    \hiddenboxm{\exp} \log x=&x\\
+    \hiddenboxm{e^A e^B} =&e^{A+B}
+  \end{align*}
+以前は alignや\hiddenbox{eqnarray}など, 内部的に複数回評価されるところではうまく動かなかったんだけど, 今は大丈夫. \hiddenbox{LaTeX Beamer Class} 側で bug fix されたのか?
+\end{frame}
+
+\begin{frame}
+\uncover<+>{} % overlay を使うという指定
+\frametitle{表示順序の制御とデフォルトのoverlayとの連携}
+
+$<>$ を使って書く場合は, その$<>$ の中はすべて手で指定. 書式は LaTeX Beamer Class のbeameruserguide.pdf の Creating Overlays のsection参照.
+
+
+\hiddenbox{A}
+\hiddenbox<3- | alert@3 | handout:0>{B}
+\hiddenbox<2-3 | handout:0>{C}
+
+\begin{enumerate}
+\item<+> D
+\item<+> E
+\item<4-> F
+\item<+> G
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}\uncover<+>{}
+\frametitle{有限の高さを持つ領域のuncover}
+\hiddenpar{
+  \begin{equation*}
+    e^x=\sum_{n=0}^\infty \frac{1}{n!}x^n
+  \end{equation*}
+}
+
+
+\hiddenpar<-1 | handout:0>{
+  \begin{equation*}
+    \cosh x = \frac12(e^{+x}+e^{-x})
+  \end{equation*}
+}
+
+  
+\end{frame}
+
+
+
+\begin{frame}[shrink]
+  \frametitle{LaTeX Beamer Class}
+\url{https://bitbucket.org/rivanvx/beamer/wiki/Home}
+
+\structure{Main Features(引用)}
+\begin{itemize}
+\item 
+The list of features supported by Beamer is quite long (unfortunately, so is presumably the list of bugs supported by Beamer). The most important features, in our opinion, are:
+\item You can use Beamer both with pdflatex and latex+dvips.
+\item The standard commands of LaTeX still work. A \tableofcontents will still create a table of contents, section is still used to create structure, and itemize still creates a list.
+\item You can easily create overlays and dynamic effects.
+\item Themes allow you to change the appearance of your presentation to suit you purposes.
+\item The themes are designed to be usable in practice, they are not just for show. You will not find such nonsense as a green body text on a picture of a green meadow.
+\item The layout, the colors, and the fonts used in a presentation can easily be changed globally, but you still also have control over the most minute detail.
+\item A special style file allows you to use the LaTeX source of a presentation directly in other LaTeX classes like article or book. This makes it easy to create presentations out of lecture notes or lecture notes out of presentations.
+\item The final output is typically a PDF file. Viewer applications for this format exist for virtually every platform. When bringing your presentation to a conference on a memory stick, you do not have to worry about which version of the presentation program might be installed there. Also, your presentation is going to look exactly the way it looked on your computer.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{もんたメソッド}
+
+\href{http://d.hatena.ne.jp/keyword/%A4%E2%A4%F3%A4%BF%A5%E1%A5%BD%A5%C3%A5%C9
+}{http://d.hatena.ne.jp/keyword/もんたメソッド}
+\end{frame}
+
+\end{document}
